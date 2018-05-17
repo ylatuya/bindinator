@@ -15,6 +15,7 @@ Usage: bindinate [--package=PACKAGE --name=NAME --out=PATH --windowslibraryname=
     --regenerate               Only regenerate the API xml, must be called from inside of the bindings directory
     --build-libversions        A comma separated list of version strings to create build profiles should for. E.g.: 2.2,2.4,2.10. If this argument is omitted, one build profile for the latest library version found in the GIR file is created. If the argument is 'all', a profile for each library version found is created.
     --list-versions            List all versions of a GIRFILE, e.g.: 'bindinate --gir=Atk-1.0 --list-versions'. This is a query-only operation. No files will be created/changed.
+    --copy-girs                A directory where to copy the used gir files.
 EOF
 }
 
@@ -65,6 +66,9 @@ for arg; do
     --list-versions)
       LISTVERSIONS=true
       ;;
+    --copy-girs=* )
+      GIR_COPY_PATH=$(echo $arg|sed -e 's,.*=,,')
+      ;;
   esac
 done
 
@@ -112,6 +116,13 @@ function find_gir {
 
 GIRDIRS=$GI_TYPELIB_PATH:@GIRDIR@
 FULLGIRFILE=$(find_gir "$GIRFILE" "$GIRDIRS")
+
+if [ -n "$GIR_COPY_PATH" ]; then
+	echo "cp $FULLGIRFILE $GIR_COPY_PATH"
+	if [ x"$FULLGIRFILE" != "x" ]; then
+		cp "$FULLGIRFILE" "$GIR_COPY_PATH"
+	fi
+fi
 
 OLDIFS="$IFS"
 IFS=','; export IFS;
