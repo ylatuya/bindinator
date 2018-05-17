@@ -131,6 +131,12 @@ for MERGEFILE in $MERGEWITH; do
     if [ "$gir" == "" ]; then
         echo "Could not find $MERGEFILE"
     fi
+	if [ -n "$GIR_COPY_PATH" ]; then
+		if [ x"$gir" != "x" ]; then
+			cp "$gir" "$GIR_COPY_PATH"
+			gir="$GIR_COPY_PATH/$(basename $gir)"
+		fi
+	fi
     FULLMERGEWITH="$FULLMERGEWITH:$gir"
 done
 
@@ -140,20 +146,20 @@ echo "Processing: $FULLGIRFILE"
 
 if [ -n "$MERGEWITH" ]; then
     echo "Merging with: $FULLMERGEWITH"
-	`@XSLTPROC@ --stringparam files $FULLMERGEWITH -o $OUTDIR/sources/$GIRFILE-merged.gir @prefix@/lib/bindinator/merge.xslt $FULLGIRFILE`
+	`@XSLTPROC@ --stringparam files $FULLMERGEWITH -o $OUTDIR/sources/$GIRFILE-merged.gir @MERGEXSLT@ $FULLGIRFILE`
 	FULLGIRFILE=$OUTDIR/sources/$GIRFILE-merged.gir
 fi
 
 if [ -z "$PACKAGE" ]; then
-	PACKAGE=`@XSLTPROC@ --stringparam type package @prefix@/lib/bindinator/preprocess.xslt @GIRDIR@/$GIRFILE.gir`
+	PACKAGE=`@XSLTPROC@ --stringparam type package @PREPROCESSXSLT@ @GIRDIR@/$GIRFILE.gir`
 fi
 ORIGINAL=$PACKAGE
-LIBS=`@XSLTPROC@ --stringparam type libs @prefix@/lib/bindinator/preprocess.xslt $FULLGIRFILE|sed 's/,/ /'`
-NS=`@XSLTPROC@ --stringparam type namespace @prefix@/lib/bindinator/preprocess.xslt $FULLGIRFILE`
-VERSION=`@XSLTPROC@ --stringparam type version @prefix@/lib/bindinator/preprocess.xslt $FULLGIRFILE`
-INCLUDES=`@XSLTPROC@ --stringparam type include @prefix@/lib/bindinator/preprocess.xslt $FULLGIRFILE|tr ' ' ','`
-GAPI=`@XSLTPROC@ --stringparam type gapi @prefix@/lib/bindinator/preprocess.xslt $FULLGIRFILE`
-LIBVERSIONS=`@XSLTPROC@ --stringparam type libversions @prefix@/lib/bindinator/preprocess.xslt $FULLGIRFILE | tr ' ' '\n' | sort -V`
+LIBS=`@XSLTPROC@ --stringparam type libs @PREPROCESSXSLT@ $FULLGIRFILE|sed 's/,/ /'`
+NS=`@XSLTPROC@ --stringparam type namespace @PREPROCESSXSLT@ $FULLGIRFILE`
+VERSION=`@XSLTPROC@ --stringparam type version @PREPROCESSXSLT@ $FULLGIRFILE`
+INCLUDES=`@XSLTPROC@ --stringparam type include @PREPROCESSXSLT@ $FULLGIRFILE|tr ' ' ','`
+GAPI=`@XSLTPROC@ --stringparam type gapi @PREPROCESSXSLT@ $FULLGIRFILE`
+LIBVERSIONS=`@XSLTPROC@ --stringparam type libversions @PREPROCESSXSLT@ $FULLGIRFILE | tr ' ' '\n' | sort -V`
 
 if $LISTVERSIONS; then
 echo $LIBVERSIONS | tr '\n' ' '
@@ -292,7 +298,7 @@ if [ -n "$REGENERATE" ] || [ "$REGENERATE_RAW" ]; then
 	fi
 
 	echo "Processing $FULLGIRFILE and outputting $REGENERATE_RAW"
-	@XSLTPROC@ -o $REGENERATE_RAW @prefix@/lib/bindinator/gir2gapi.xslt $FULLGIRFILE
+	@XSLTPROC@ -o $REGENERATE_RAW @GIR2GAPIXSLT@ $FULLGIRFILE
 	exit 0
 fi
 
@@ -456,7 +462,7 @@ fi
 
 if [ ! -e $OUTDIR/sources/$NAME-sharp-api.raw ]; then
 	echo "Processing $FULLGIRFILE and outputting $OUTDIR/sources/$NAME-sharp-api.raw"
-	@XSLTPROC@ -o $OUTDIR/sources/$NAME-sharp-api.raw @prefix@/lib/bindinator/gir2gapi.xslt $FULLGIRFILE
+	@XSLTPROC@ -o $OUTDIR/sources/$NAME-sharp-api.raw @GIR2GAPIXSLT@ $FULLGIRFILE
 fi
 
 # Create xbuild files (sln and csproj)

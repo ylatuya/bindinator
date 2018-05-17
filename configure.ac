@@ -25,6 +25,23 @@ fi
 GIRDIR=`pkg-config --variable=girdir gobject-introspection-1.0`/
 AC_SUBST(GIRDIR)
 
+if test "x$prefix" = "xNONE" ; then
+	PREPROCESSXSLT=/usr/local/lib/bindinator/preprocess.xslt
+	GIR2GAPIXSLT=/usr/local/lib/bindinator/gir2gapi.xslt
+	MERGEXSLT=/usr/local/lib/bindinator/merge.xslt
+else
+	PREPROCESSXSLT=${prefix}/lib/bindinator/preprocess.xslt
+	GIR2GAPIXSLT=${prefix}/lib/bindinator/gir2gapi.xslt
+	MERGEXSLT=${prefix}/lib/bindinator/merge.xslt
+fi
+
+AC_MSG_RESULT($PREPROCESSXSLT)
+AC_SUBST(PREPROCESSXSLT)
+AC_SUBST(MERGEXSLT)
+
+AC_MSG_RESULT($GIR2GAPIXSLT)
+AC_SUBST(GIR2GAPIXSLT)
+
 AC_PATH_PROG(GAPIFIXUP, gapi3-fixup, no)
 if test "x$GAPIFIXUP" = "xno"; then
 	AC_MSG_CHECKING(for gapi3-fixup.exe)
