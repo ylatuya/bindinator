@@ -24,7 +24,7 @@ if xsltproc.found() and pkgconfig.found()
     cdata.set_quoted('XSLTPROC', xsltproc.path())
 
     cdata.set_quoted('PREPROCESSXSLT', join_paths(meson.current_source_dir(), 'bindinate', 'preprocess.xslt'))
-    cdata.set_quoted('GIR2GAPIXSLT', join_paths(meson.current_source_dir(), 'bindinate', 'gir2gapi.xslt'))
+    cdata.set_quoted('GIR2GAPIXSLT', join_paths(meson.current_build_dir(), 'gir2gapi.xslt'))
     cdata.set_quoted('MERGEXSLT', join_paths(meson.current_source_dir(), 'bindinate', 'merge.xslt'))
     cdata.set_quoted('UNIX2DOS', 'UNKNOWN')
     cdata.set_quoted('UUIDGEN', 'UNKNOWN')
@@ -35,6 +35,10 @@ if xsltproc.found() and pkgconfig.found()
     cdata.set_quoted('GAPIFIXUP', gapi_fixup.full_path())
 
     configure_file(output : 'bindinate', input: 'bindinate/bindinate.in', configuration : cdata)
+
+    cdata = configuration_data()
+    cdata.set('GIRDIR', dep.get_pkgconfig_variable('girdir') + '/')
+    configure_file(output : 'gir2gapi.xslt', input: 'bindinate/gir2gapi.xslt.in', configuration : cdata)
 
     bindinate = find_program(join_paths(meson.current_build_dir(), 'bindinate'))
 endif
