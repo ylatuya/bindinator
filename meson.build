@@ -1,6 +1,6 @@
 project('bindinator', ['cs'], version: '0.1', meson_version: '>0.46', license: 'LGPL')
 
-dep = dependency('gobject-introspection-1.0')
+dep = dependency('gobject-introspection-1.0', required: false)
 
 found = false
 cdata = configuration_data()
@@ -20,7 +20,11 @@ endif
 
 if xsltproc.found() and pkgconfig.found()
     found = true
-    cdata.set_quoted('GIRDIR', dep.get_pkgconfig_variable('girdir'))
+    if dep.found()
+        cdata.set_quoted('GIRDIR', dep.get_pkgconfig_variable('girdir'))
+    else
+        cdata.set_quoted('GIRDIR', join_paths(get_option('prefix'), get_option('datadir'), 'gir-1.0'))
+    endif
     cdata.set_quoted('XSLTPROC', xsltproc.path())
 
     cdata.set_quoted('PREPROCESSXSLT', join_paths(meson.current_source_dir(), 'bindinate', 'preprocess.xslt'))
