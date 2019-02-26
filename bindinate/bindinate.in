@@ -101,7 +101,7 @@ if [ ! -d $OUTDIR/doc ]; then
 	mkdir -p $OUTDIR/doc
 fi
 
-function find_gir {
+find_gir () {
     OLDIFS="$IFS"
     IFS=':'; export IFS;
     for dir in $2; do
