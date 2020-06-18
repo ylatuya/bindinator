@@ -1246,7 +1246,7 @@
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:choose>
-						<xsl:when test="exsl:node-set($ptypemap)/type/@ctype">
+						<xsl:when test="exsl:node-set($ptypemap)/type/@ctype!=''">
 							<xsl:value-of select="exsl:node-set($ptypemap)/type/@ctype"/>
 						</xsl:when>
 						<xsl:otherwise>
@@ -1254,7 +1254,14 @@
 								<xsl:when test="gir:callback[@name=$name]">
 									<xsl:value-of select="//gir:repository/gir:namespace/@name"
 										/><xsl:value-of select="@name"/>Func </xsl:when>
-								<xsl:otherwise>none</xsl:otherwise>
+								<xsl:otherwise>
+									<xsl:choose>
+										<xsl:when test="gir:array">
+											<xsl:value-of select="gir:array/*/@c:type"/>
+											</xsl:when>
+										<xsl:otherwise>none</xsl:otherwise>
+									</xsl:choose>
+								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:otherwise>
 					</xsl:choose>
