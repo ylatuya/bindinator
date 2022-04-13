@@ -20,11 +20,13 @@ endif
 
 if xsltproc.found() and pkgconfig.found()
     found = true
-    if dep.found()
-        cdata.set_quoted('GIRDIR', dep.get_pkgconfig_variable('girdir'))
+    if dep.found() and dep.type_name() == 'pkgconfig'
+        gir_dir = dep.get_pkgconfig_variable('girdir')
     else
-        cdata.set_quoted('GIRDIR', join_paths(get_option('prefix'), get_option('datadir'), 'gir-1.0'))
+        gir_dir = join_paths(get_option('prefix'), get_option('datadir'), 'gir-1.0')
     endif
+    gir_dir = gir_dir + '/'
+    cdata.set_quoted('GIRDIR', gir_dir)
     cdata.set_quoted('XSLTPROC', xsltproc.path())
 
     cdata.set_quoted('PREPROCESSXSLT', join_paths(meson.current_source_dir(), 'bindinate', 'preprocess.xslt'))
@@ -41,7 +43,7 @@ if xsltproc.found() and pkgconfig.found()
     configure_file(output : 'bindinate', input: 'bindinate/bindinate.in', configuration : cdata)
 
     cdata = configuration_data()
-    cdata.set('GIRDIR', dep.get_pkgconfig_variable('girdir') + '/')
+    cdata.set('GIRDIR', gir_dir)
     configure_file(output : 'gir2gapi.xslt', input: 'bindinate/gir2gapi.xslt.in', configuration : cdata)
 
     bindinate = find_program(join_paths(meson.current_build_dir(), 'bindinate'))
