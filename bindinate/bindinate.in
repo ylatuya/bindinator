@@ -287,7 +287,7 @@ fi
 
 if [ -n "$REGENERATE" ] || [ "$REGENERATE_RAW" ]; then
     if [ -z "$REGENERATE_RAW" ]; then
-        REGENERATE_RAW="sources/$NAME-sharp-api.raw"
+        REGENERATE_RAW="$OUTDIR/sources/$NAME-sharp-api.raw"
     fi
 
     METADATA_FILE="$(dirname $REGENERATE_RAW)/$GIRFILE-merged.metadata"
@@ -515,4 +515,3 @@ cat @prefix@/lib/bindinator/Bindings.sln.template | \
 	@UNIX2DOS@ > "${OUTDIR}/${NAME}-sharp.sln"
 
 cp @prefix@/lib/bindinator/csproj.xslt "${OUTDIR}/sources/csproj.xslt"
-
